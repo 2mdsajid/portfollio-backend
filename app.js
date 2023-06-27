@@ -33,7 +33,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', (req, res) => {
-    res.json({msg:'Hello This Is Sajid'})
+    res.json({msg:'Hello This Is Sajid','email':process.env.WORK_EMAIL})
 })
 
 //before AUTH.JS loading so that it effects
