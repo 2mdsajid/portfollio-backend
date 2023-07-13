@@ -13,7 +13,8 @@ const transporter = nodemailer.createTransport({
 });
 
 const Friends = require('../schema/friendsCardSchema')
-const friendrequest = require('../schema/friendRequestSchema')
+const friendrequest = require('../schema/friendRequestSchema');
+const friendRequest = require('../schema/friendRequestSchema');
 
 router.post('/addfriends', async (req, res) => {
     try {
@@ -61,7 +62,7 @@ router.post('/addfriends', async (req, res) => {
     try {
         const {  name, opinion } = req.body;
         // Checking for required fields
-        if ( !name || !message) {
+        if ( !name || !opinion) {
             return res.status(400).json({
                 message: 'All fields are required',
                 status: 400,
@@ -70,7 +71,7 @@ router.post('/addfriends', async (req, res) => {
         }
 
         // Create a new message document
-        const newMessage = new Message({
+        const newMessage = new friendRequest({
             name,
             opinion: opinion || ''
         });

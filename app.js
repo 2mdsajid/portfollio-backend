@@ -42,6 +42,7 @@ app.use(express.json())
 // Linking the noteroute.js file to the main app
 app.use(require('./routes/noteroute'))
 app.use(require('./routes/pageroutes'))
+app.use(require('./routes/friendroutes'))
 app.use(require('./routes/htmlroutes'))
 // app.use(require('./routes/aws'))
 
