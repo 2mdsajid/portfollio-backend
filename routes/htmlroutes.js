@@ -190,7 +190,6 @@ router.post('/sendformmessage/:uniqueid', async (req, res) => {
     const {sendername,senderemail,sendermessage} = req.body
     try {
         const htmldata = await HTMLPage.findOne({ uniqueid: uniqueid })
-        console.log("🚀 ~ file: htmlroutes.js:193 ~ router.post ~ htmldata:", htmldata)
         const formmessage = await FormMessage.findOne({ uniqueid: uniqueid });
         if (!formmessage) {
           return res.status(404).json({ message: 'Contact not found' });
@@ -244,7 +243,6 @@ router.post('/sendformmessage/:uniqueid', async (req, res) => {
 
     
       } catch (error) {
-        console.log("🚀 ~ file: htmlroutes.js:236 ~ router.post ~ error:", error)
         res.status(500).json({ message: 'Internal server error' });
       }
 

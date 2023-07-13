@@ -4,6 +4,7 @@ const router = express.Router()
 const Message = require('../schema/messagesSchema')
 const WorkRequest = require('../schema/workRequestSchema')
 const Event = require('../schema/eventSchema')
+const Anonymous = require('../schema/anonymousSchema')
 
 // nodemailer cofnigurration
 const nodemailer = require('nodemailer');
@@ -59,6 +60,70 @@ router.post('/addmessages', async (req, res) => {
         } catch (error) {
             if (error.message.includes("Invalid recipient")) {
                 console.log(`Wrong email address: ${email}`);
+            } else {
+                console.log(error);
+            }
+        }
+
+        if (savedMessage) {
+            res.status(201).json({
+                message: 'Message sent successfully',
+                savedMessage,
+                status: 201,
+                meaning: 'created'
+            });
+        } else {
+            res.status(400).json({
+                message: 'Unable to send the message',
+                status: 400,
+                meaning: 'badrequest'
+            });
+        }
+    } catch (error) {
+        res.status(501).json({
+            message: error.message,
+            status: 501,
+            meaning: 'internalerror'
+        });
+    }
+});
+router.post('/sendanonymous', async (req, res) => {
+    try {
+        const { message,uniqueid } = req.body;
+        // Checking for required fields
+        if (!message) {
+            return res.status(400).json({
+                message: 'All fields are required',
+                status: 400,
+                meaning: 'badrequest'
+            });
+        }
+
+        // Create a new message document
+        const newMessage = new Anonymous({
+            uniqueid:'someid',
+            message
+        });
+        // Save the new message to the database
+        const savedMessage = await newMessage.save()
+        const mailOptions = {
+            from: 'livingasrb007@gmail.com',
+            to: process.env.WORK_EMAIL,
+            subject: 'Anonymous Message',
+            html: `<div style="background-color: #F8FAFC; padding: 32px;">
+            <div style="background-color: #FFFFFF; border-radius: 16px; padding: 32px;">
+              <p style="font-size: 16px; margin-bottom: 32px;"><strong>Message:</strong> ${message}</p>
+            </div>
+          </div>
+          `,
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log(`Email received from`);
+        } catch (error) {
+            if (error.message.includes("Invalid recipient")) {
+                console.log(`Wrong email address:`);
             } else {
                 console.log(error);
             }
