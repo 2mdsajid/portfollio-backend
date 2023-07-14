@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-
+const rateLimit = require('express-rate-limit');
 
 // nodemailer cofnigurration
 const nodemailer = require('nodemailer');
@@ -13,7 +13,6 @@ const transporter = nodemailer.createTransport({
 });
 
 const Friends = require('../schema/friendsCardSchema')
-const friendrequest = require('../schema/friendRequestSchema');
 const friendRequest = require('../schema/friendRequestSchema');
 
 router.post('/addfriends', async (req, res) => {
@@ -38,7 +37,6 @@ router.post('/addfriends', async (req, res) => {
       if (savedFriend) {
         res.status(201).json({
           message: 'Friend added successfully',
-          savedFriend,
           status: 201,
           meaning: 'created'
         });
@@ -105,7 +103,6 @@ router.post('/addfriends', async (req, res) => {
         if (savedMessage) {
             res.status(201).json({
                 message: 'Message sent successfully',
-                savedMessage,
                 status: 201,
                 meaning: 'created'
             });
