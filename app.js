@@ -16,7 +16,7 @@ dotenv.config({ path: './config.env' })
 const PORT = process.env.PORT || 3001
 
 // Connecting to the MongoDB database
-// require('./db/mongo')
+require('./db/mongo')
 
 // Serving static files from the 'public' folder
 app.use('/public', express.static('public'));

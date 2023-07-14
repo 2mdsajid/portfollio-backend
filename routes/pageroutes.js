@@ -86,6 +86,7 @@ router.post("/addmessages", limitermiddleware, async (req, res) => {
 router.post("/sendanonymous", limitermiddleware, async (req, res) => {
   try {
     const { message, uniqueid } = req.body;
+    console.log("🚀 ~ file: pageroutes.js:89 ~ router.post ~ message:", message)
     // Checking for required fields
     if (!message) {
       return res.status(400).json({
