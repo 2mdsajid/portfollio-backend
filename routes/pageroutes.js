@@ -6,6 +6,8 @@ const Message = require("../schema/messagesSchema");
 const WorkRequest = require("../schema/workRequestSchema");
 const Event = require("../schema/eventSchema");
 const Anonymous = require("../schema/anonymousSchema");
+const DailyVisitor = require("../schema/dailyUserVisitSchema");
+const NewVisitor = require("../schema/newVisitorSchema");
 
 // nodemailer cofnigurration
 const nodemailer = require("nodemailer");
@@ -86,7 +88,10 @@ router.post("/addmessages", limitermiddleware, async (req, res) => {
 router.post("/sendanonymous", limitermiddleware, async (req, res) => {
   try {
     const { message, uniqueid } = req.body;
-    console.log("🚀 ~ file: pageroutes.js:89 ~ router.post ~ message:", message)
+    console.log(
+      "🚀 ~ file: pageroutes.js:89 ~ router.post ~ message:",
+      message
+    );
     // Checking for required fields
     if (!message) {
       return res.status(400).json({
@@ -246,6 +251,55 @@ router.post("/addevents", async (req, res) => {
     }
   } catch (error) {
     res.status(501).json({
+      message: error.message,
+      status: 501,
+      meaning: "internalerror",
+    });
+  }
+});
+
+// add visitors
+router.get("/addvisitor/:path", async (req, res) => {
+  try {
+    const { path } = req.params;
+
+    const currentDate = new Date(); // Reset time to midnight
+    const isoDate = new Date(currentDate).toISOString();
+    const yearMonthDay = isoDate.slice(0, 10); // Extract the first 10 characters (YYYY-MM-DD)
+
+    let dailyvisit = await DailyVisitor.findOne({ date: yearMonthDay });
+    if (dailyvisit) {
+      dailyvisit.count++;
+    } else {
+      dailyvisit = new DailyVisitor({ date: yearMonthDay, count: 1 });
+    }
+    await dailyvisit.save();
+
+    let newVisitor = await NewVisitor.findOne({ path: path });
+    if (newVisitor) {
+      const visit = newVisitor.values.find(
+        (item) => item.date === yearMonthDay
+      );
+      if (visit) {
+        visit.count++;
+      } else {
+        newVisitor.values.push({ count: 1, date: yearMonthDay });
+      }
+    } else {
+      newVisitor = new NewVisitor({
+        path: path,
+        values: [{ count: 1, date: yearMonthDay }],
+      });
+    }
+
+    await newVisitor.save();
+    res.status(201).json({
+      message: "visitor added ",
+      status: 201,
+      meaning: "created",
+    });
+  } catch (error) {
+    return res.status(501).json({
       message: error.message,
       status: 501,
       meaning: "internalerror",
