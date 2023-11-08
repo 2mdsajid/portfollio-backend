@@ -1,4 +1,5 @@
 const fs = require("fs");
+const fetch = require('node-fetch');
 
 const express = require("express");
 const router = express.Router();
@@ -61,7 +62,6 @@ router.get("/fetch-questions", async (req, res) => {
     const limit = 200
     const startId = prev_end + 1;
     const endId = prev_end + limit;
-    // const fetchedDataArray = [];
     const fetchPromises = [];
     for (let id = startId; id <= endId; id++) {
       fetchPromises.push(fetchData(id));
