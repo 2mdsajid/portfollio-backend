@@ -44,6 +44,7 @@ app.use(require('./routes/noteroute'))
 app.use(require('./routes/pageroutes'))
 app.use(require('./routes/friendroutes'))
 app.use(require('./routes/htmlroutes'))
+app.use(require('./routes/qnroute'))
 // app.use(require('./routes/aws'))
 
 const server = http.createServer(app);
