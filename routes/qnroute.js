@@ -1,5 +1,5 @@
 const fs = require("fs");
-const axios = require('axios');
+const axios = require("axios");
 
 const express = require("express");
 const router = express.Router();
@@ -22,7 +22,7 @@ async function fetchData(id) {
     if (response.status !== 200) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    const data = response.data
+    const data = response.data;
     const formattedData = {
       id: data.id,
       question: data.question,
@@ -38,7 +38,7 @@ async function fetchData(id) {
       answer: data.correct_answer,
       explanation: data.explanation,
     };
-    return formattedData
+    return formattedData;
   } catch (error) {
     console.error("Error:", error);
   }
@@ -50,11 +50,12 @@ router.get("/fetch-questions", async (req, res) => {
 
     const prev_end = lastQuestion?.id ?? 11086;
 
-    if(prev_end>=15000) return res
-    .status(200)
-    .json({ message: "Upper limit reached fro questions." });
+    if (prev_end >= 15000)
+      return res
+        .status(200)
+        .json({ message: "Upper limit reached fro questions." });
 
-    const limit = process.env.LIMIT
+    const limit = 100;
     const startId = prev_end + 1;
     const endId = prev_end + limit;
     const fetchPromises = [];
