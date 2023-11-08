@@ -40,7 +40,7 @@ async function fetchData(id) {
     };
     return formattedData;
   } catch (error) {
-    console.error("Error:", error);
+    return console.error("Error:", error);
   }
 }
 
