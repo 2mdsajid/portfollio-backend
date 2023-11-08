@@ -58,7 +58,7 @@ router.get("/fetch-questions", async (req, res) => {
     .status(200)
     .json({ message: "Upper limit reached fro questions." });
 
-    const limit = 2
+    const limit = 200
     const startId = prev_end + 1;
     const endId = prev_end + limit;
     // const fetchedDataArray = [];
