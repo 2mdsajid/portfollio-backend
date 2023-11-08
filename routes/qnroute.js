@@ -20,7 +20,7 @@ async function fetchData(id) {
       headers: headers,
     });
     if (response.status !== 200) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      return console.log("error", response.status);
     }
     const data = response.data;
     const formattedData = {
