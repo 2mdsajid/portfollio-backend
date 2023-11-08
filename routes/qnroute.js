@@ -1,5 +1,5 @@
 const fs = require("fs");
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 const express = require("express");
 const router = express.Router();
@@ -16,17 +16,13 @@ const headers = {
 // Function to fetch and extract data
 async function fetchData(id) {
   try {
-    const response = await fetch(
-      `${process.env.ED_URL}=${id}`,
-      {
-        method: "GET",
-        headers: headers,
-      }
-    );
-    if (!response.ok) {
+    const response = await axios.get(`${process.env.ED_URL}=${id}`, {
+      headers: headers,
+    });
+    if (response.status !== 200) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    const data = await response.json();
+    const data = response.data
     const formattedData = {
       id: data.id,
       question: data.question,
@@ -42,7 +38,6 @@ async function fetchData(id) {
       answer: data.correct_answer,
       explanation: data.explanation,
     };
-
     return formattedData
   } catch (error) {
     console.error("Error:", error);
