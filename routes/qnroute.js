@@ -13,14 +13,31 @@ const headers = {
   Referer: "https://entrancedose.com/login",
 };
 
-// Function to fetch and extract data
+const dumm = {
+  id: 0,
+  question: "a random",
+  options: {
+    a: "a",
+    b: "b",
+    c: "v",
+    d: "d",
+  },
+  sub: 0,
+  topic: 0,
+  difficulty: "medium",
+  answer: 1,
+  explanation: "null",
+};
+
 async function fetchData(id) {
   try {
-    const response = await axios.get(`${process.env.ED_URL}=${id}`, {
-      headers: headers,
-    });
+  const response = await axios.get(`${process.env.ED_URL}=${id}`, {
+    headers: headers,
+  });
     if (response.status !== 200) {
-      return console.log("error", response.status);
+      console.log("error", response.status);
+      dumm.id = id
+      return dumm;
     }
     const data = response.data;
     const formattedData = {
@@ -34,47 +51,45 @@ async function fetchData(id) {
       },
       sub: data.subject_id,
       topic: data.topic_id,
-      difficulty: data.difficulty_level,
-      answer: data.correct_answer,
-      explanation: data.explanation,
+      difficulty: data.difficulty_level || "medium",
+      answer: data.correct_answer || 1,
+      explanation: data.explanation || "",
     };
     return formattedData;
   } catch (error) {
-    return console.error("Error:", error);
+    console.log("Errorrrrrrrrrrrrrr:", error);
+    dumm.id = id
+    return dumm;
   }
 }
 
 router.get("/fetch-questions", async (req, res) => {
   try {
     const lastQuestion = await Question.findOne({}, {}, { sort: { id: -1 } });
-
     const prev_end = lastQuestion?.id ?? 11086;
 
-    if (prev_end >= 15000)
-      return res
-        .status(200)
-        .json({ message: "Upper limit reached fro questions." });
+    if (prev_end >= 15000) return res.status(200).json({ message: "Upper limit reached for questions." });
 
-    const limit = 100;
+    const limit = 200;
     const startId = prev_end + 1;
     const endId = prev_end + limit;
-    const fetchPromises = [];
+    const fetchedDataArray = [];
+
     for (let id = startId; id <= endId; id++) {
-      fetchPromises.push(fetchData(id));
+      const questionData = await fetchData(id);
+      fetchedDataArray.push(questionData);
     }
 
-    const fetchedDataArray = await Promise.all(fetchPromises);
-    await Question.insertMany(fetchedDataArray);
-
-    return res
-      .status(200)
-      .json({ message: "Questions fetched and inserted successfully." });
+    if (fetchedDataArray.length > 0) {
+      await Question.insertMany(fetchedDataArray);
+      return res
+        .status(200)
+        .json({ message: "Questions fetched and inserted successfully." });
+    } 
   } catch (error) {
-    console.error("Error:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching and inserting questions." });
+    return res.status(500).json({ message: "Error fetching and inserting questions." });
   }
 });
+
 
 module.exports = router;
